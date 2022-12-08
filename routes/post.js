@@ -43,14 +43,14 @@ router.get("/",async (req,res,next) => {
 });
 
 router.post("/",jwtVerify,async (req,res) => {
-    //유저에게 받아올값
-    const {title, content } = req.body;
-    const {userId} = {userId:res.locals.userId};
-    //에러처리
-    if(!title || !content){
-        errorApi(common.invalidDataType,PRECONDITION_FAILED);
-    }
     try{
+        //유저에게 받아올값
+        const {title, content } = req.body;
+        const {userId} = {userId:res.locals.userId};
+        //에러처리
+        if(!title || !content){
+            errorApi(common.invalidDataType,PRECONDITION_FAILED);
+        }
         await Posts.create({userId, title, content});
     }catch (error){
         errorApi(postError.createdFailPost,BAD_REQUEST);
@@ -119,12 +119,12 @@ router.get("/:postId",async (req,res,next) => {
 });
 
 router.put("/:postId",jwtVerify,async (req,res) => {
-    const postId = req.params;
-    const {title, content } = req.body;
-    if(!title || !content){
-        errorApi(common.invalidDataType,PRECONDITION_FAILED)
-    }
     try {
+        const postId = req.params;
+        const {title, content } = req.body;
+        if(!title || !content){
+            errorApi(common.invalidDataType,PRECONDITION_FAILED)
+        }
         let nowDate= new Date();
         let updatedAt = new Date(nowDate.getTime() - (nowDate.getTimezoneOffset() * 60000)).toISOString();
 
@@ -144,17 +144,16 @@ router.put("/:postId",jwtVerify,async (req,res) => {
 
 
 router.delete("/:postId",jwtVerify,async (req,res) => {
-    const postId = req.params;
-
-    let post = await Posts.findAndCountAll({
-        where: postId,
-    });
-
-    if(!post.count){
-        errorApi(postError.postNotFound,NOT_FOUND);
-    }
-
     try {
+        const postId = req.params;
+
+        let post = await Posts.findAndCountAll({
+            where: postId,
+        });
+
+        if(!post.count){
+            errorApi(postError.postNotFound,NOT_FOUND);
+        }
         await Posts.destroy({where:postId})
         res.status(OK).json({  "message": "게시글을 삭제하였습니다."});
     }catch (error){
@@ -163,16 +162,16 @@ router.delete("/:postId",jwtVerify,async (req,res) => {
 });
 
 router.put("/:postId/like",jwtVerify,async (req,res,next) => {
-    const {userId} = {userId:res.locals.userId};
-    const {postId} = req.params;
-
-    let post = await Posts.findAndCountAll({
-        where: {"postId":postId},
-    });
-    if(!post.count){
-        errorApi(postError.postNotFound,NOT_FOUND)
-    }
     try{
+        const {userId} = {userId:res.locals.userId};
+        const {postId} = req.params;
+
+        let post = await Posts.findAndCountAll({
+            where: {"postId":postId},
+        });
+        if(!post.count){
+            errorApi(postError.postNotFound,NOT_FOUND)
+        }
         let like = await likes.findAndCountAll({where:{"userId":userId,"postId":postId}});
         let message = "";
         if(like.count){

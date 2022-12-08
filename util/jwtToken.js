@@ -2,9 +2,7 @@ const jwt = require("jsonwebtoken");
 require('dotenv').config();
 const errorApi = require("../error/errorApi");
 const errorMessage = require("../error/errormessage");
-const {common,userError} = errorMessage
-
-let tokenObject = {};
+const {userError} = errorMessage
 
 const createAccessToken = function (id) {
     const accessToken = jwt.sign(
@@ -20,7 +18,6 @@ const jwtVerify = (req,res,next) => {
     try{
         const {token} = req.cookies;
         let data = jwt.verify(token,process.env.SECRETKEY);
-        console.log(data);
         if(!token){
             errorApi(userError.notJwtToken);
         }else {

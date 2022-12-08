@@ -4,19 +4,17 @@ require('express-async-errors');
 const app = express();
 const PORT = process.env.PORT;
 const cookieParser = require("cookie-parser");
-
+const router = require("./routes/index.js");
 const { StatusCodes } = require('http-status-codes');
-//DB연결
 
 //바디
 app.use(express.json());
 app.use(cookieParser());
 
 //라우터
-const router = require("./routes/index.js");
 app.use("/api",router);
 
-
+//에러 핸들러
 app.use((error,req, res, next) => {
     res.status(error.status || StatusCodes.BAD_REQUEST).json({message: error.message})
 });

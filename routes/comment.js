@@ -8,19 +8,18 @@ const errorMessage = require('../error/errormessage.js');
 const {jwtVerify} = require("../util/jwtToken.js");
 //DB
 const {Posts,Users,Comments} = require("../models");
-const {where} = require("sequelize");
 const {common,commentError} = errorMessage;
-const {BAD_REQUEST,OK,PRECONDITION_FAILED,UNAUTHORIZED,NOT_FOUND} = StatusCodes;
+const {BAD_REQUEST,OK,PRECONDITION_FAILED,NOT_FOUND} = StatusCodes;
 
 router.post("/:postId",jwtVerify,async (req,res,next) => {
-    const {postId} = req.params;
-    const userId = res.locals.userId;
-    const {comment} = req.body;
-    if(!comment){
-        errorApi(common.invalidDataType,PRECONDITION_FAILED);
-    }
-    //게시글 조회
     try{
+        const {postId} = req.params;
+        const userId = res.locals.userId;
+        const {comment} = req.body;
+        if(!comment){
+            errorApi(common.invalidDataType,PRECONDITION_FAILED);
+        }
+        //게시글 조회
         let post = await Posts.findAndCountAll({
             where: {"postId":postId},
         });
@@ -57,13 +56,13 @@ router.get("/:postId",jwtVerify,async (req,res,next) => {
 });
 
 router.put("/:commentId",jwtVerify,async (req,res,next) => {
-    const {commentId} = req.params;
-    const userId = res.locals.userId;
-    const {comment} = req.body;
-    if(!comment){
-        errorApi(common.invalidDataType,PRECONDITION_FAILED)
-    }
     try {
+        const {commentId} = req.params;
+        const userId = res.locals.userId;
+        const {comment} = req.body;
+        if(!comment){
+            errorApi(common.invalidDataType,PRECONDITION_FAILED)
+        }
         let commentFind = await Comments.findAndCountAll({where: {"userId":userId}})
         if(!commentFind.count){
             errorApi(commentError.notComment,NOT_FOUND);
